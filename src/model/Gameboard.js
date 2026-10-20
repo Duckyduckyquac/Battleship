@@ -45,7 +45,7 @@ class Gameboard{
             let distance = (columnMinuend-columnSubtrahend)+1;
             if(distance == shipInstance.shipLength){
                 // place the ship
-                let currentShipIdentifier = `${shipInstance.shipType}`;
+                let currentShipIdentifier = JSON.stringify(shipInstance.shipType);
                 let currentShipSquares = [];
                 // invalidSquares would contain all arrayLists of occupiedSquares
                 // Therefore, it still needs to be looped through
@@ -85,7 +85,7 @@ class Gameboard{
             let distance = rowMinuend-rowSubtrahend+1;
             if(distance == shipInstance.shipLength){
                 // place the ship
-                let currentShipIdentifier = `${shipInstance.shipType}`;
+                let currentShipIdentifier = JSON.stringify(shipInstance.shipType);
                 let currentShipSquares = [];
                 // invalidSquares would contain all arrayLists of occupiedSquares
                 // Therefore, it still needs to be looped through
@@ -129,7 +129,7 @@ class Gameboard{
 
         // Step 1: See if the square already got attacked before
         let attackedSquareCoordinates = Object.keys(this.attackedSquares);
-        if(attackedSquareCoordinates.includes(`[${target}]`)==true){
+        if(attackedSquareCoordinates.includes(JSON.stringify(target))==true){
             return false;
         }
 
@@ -159,7 +159,7 @@ class Gameboard{
             }
         }
         // Step 3: Log the attacked coordinate
-        this.attackedSquares[`[${target}]`]=validHit;
+        this.attackedSquares[JSON.stringify(target)]=validHit;
 
         // Step 4: Send the damage to the ship
         if(validHit===true){
@@ -188,6 +188,23 @@ class Gameboard{
             }
         }
         return false;
+    }
+    isValidSquare(coordinate){
+        let row = coordinate.row;
+        let column = coordinate.column;
+        
+        // Define the bounds of the board
+        let minRow = 1; 
+        let maxRow = 10;
+        let minColumn = 1;
+        let maxColumn = 10;
+
+        if((row<minRow)||(row>maxRow)||(column<minColumn)||(column>maxColumn)){
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 }
 

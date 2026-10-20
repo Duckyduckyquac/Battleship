@@ -32,7 +32,7 @@ class Ship{
     typeToLength(shipType){
         let validShipTypes = [1,2,3,4,5];
         if(validShipTypes.includes(shipType)===true){
-            let shipTypeString = `${shipType}`;
+            let shipTypeString = JSON.stringify(shipType);
             return this.typeToLengthMapping[shipTypeString];
         }
         else{

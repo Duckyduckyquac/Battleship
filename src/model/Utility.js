@@ -17,6 +17,22 @@ class Utility{
         }
         return resultRange
     }
+    randomBoardCoordinate(min,max){
+        let randomCoordinate = Math.floor(Math.random()*(max-min+1))+min;
+        return randomCoordinate;
+    }
+
+    populateBoardCoordinateList(){
+        let boardList = [];
+        for(let i = 1; i<=10 ;i++){
+            for(let j = 1; j<= 10; j++){
+                let newCoordinate = [i, j];
+                let coordString = JSON.stringify(newCoordinate);
+                boardList.push(coordString);
+            }
+        }
+        return boardList;
+    }
 }
 
 module.exports= {Utility};

@@ -4,8 +4,9 @@
 // of whether it is a real player or an AI
 
 class Player{
-    constructor(gameboard, isHuman){
+    // gameboard is a gameboard instance. This is simply an abstract class that will be extended by human and AI
+    constructor(gameboard, name){
+        this.name = name;
         this.gameboard=gameboard;
-        this.isHuman=isHuman;
     }
 }

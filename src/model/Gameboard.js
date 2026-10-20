@@ -129,7 +129,7 @@ class Gameboard{
 
         // Step 1: See if the square already got attacked before
         let attackedSquareCoordinates = Object.keys(this.attackedSquares);
-        if(attackedSquareCoordinates.includes(`${target}`)==true){
+        if(attackedSquareCoordinates.includes(`[${target}]`)==true){
             return false;
         }
 
@@ -159,7 +159,7 @@ class Gameboard{
             }
         }
         // Step 3: Log the attacked coordinate
-        this.attackedSquares[`${target}`]=validHit;
+        this.attackedSquares[`[${target}]`]=validHit;
 
         // Step 4: Send the damage to the ship
         if(validHit===true){

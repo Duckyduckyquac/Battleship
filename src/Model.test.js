@@ -51,7 +51,6 @@ describe('Test for the model modules', function(){
             expect(newCoordinate.column).toEqual(2);
         });        
     });
-
     describe('Test for GameBoard Module', function(){
         let { Gameboard } = require('./model/Gameboard.js');
         let { Ship } = require('./model/Ship.js');
@@ -212,6 +211,110 @@ describe('Test for the model modules', function(){
 
                 expect(newBoard.allSunk()).toEqual(true);
         });
-    });
+        test('isValidSquare works properly for valid and invalid squares', function(){
+                let newBoard = new Gameboard();
+                // These are valid coordinates
+                let coord1 = new Coordinate(1, 1); // lower bound
+                let coord2 = new Coordinate(10,10); // upper bound
 
+                // All of these are invalid
+                let coord3 = new Coordinate(0, 10); // row less than minRow
+                let coord4 = new Coordinate(11,10); // row greater than maxRow
+                let coord5 = new Coordinate(1, 0); // column less than minColumn
+                let coord6 = new Coordinate(1, 11); // column greater than maxColumn
+
+                expect(newBoard.isValidSquare(coord1)).toEqual(true);
+                expect(newBoard.isValidSquare(coord2)).toEqual(true);
+                expect(newBoard.isValidSquare(coord3)).toEqual(false);
+                expect(newBoard.isValidSquare(coord4)).toEqual(false);
+                expect(newBoard.isValidSquare(coord5)).toEqual(false);
+                expect(newBoard.isValidSquare(coord6)).toEqual(false);
+            });
+    });
+    describe('Test for Player Module', function(){
+        let { Gameboard } = require('./model/Gameboard.js');
+        let {Player} = require('./model/Player.js');
+
+        test('Player is initialized properly', function(){
+            let newBoard = new Gameboard();
+            let newPlayer = new Player(newBoard, 'kryptex');
+
+            expect(newPlayer.gameboard).toEqual(newBoard);
+            expect(newPlayer.name).toBe('kryptex');
+            expect(newPlayer.score).toBe(0);
+        });
+    });
+    describe('Test for AI Module', function(){
+        let { Gameboard } = require('./model/Gameboard.js');
+        let { Ship } = require('./model/Ship.js');
+        let {Coordinate} = require('./model/Coordinate.js');
+        let {Ai} = require('./model/AI.js');
+
+        test('AI is in initialized properly', function(){
+            let newBoard = new Gameboard();
+            let newAI = new Ai(newBoard, 'kryptex');
+
+            expect(newAI.gameboard).toEqual(newBoard);
+            expect(newAI.name).toEqual('kryptex');
+        });
+        test('generateAttackCoordinate works properly when \
+            there are no more available squares',function(){
+                let newBoard = new Gameboard();
+                let newAI = new Ai(newBoard, 'kryptex');
+                newAI.availableSquares = []
+                expect(newAI.generateAttackCoordinate()).toEqual(false);
+            });
+        test('generateAttackCoordinate works properly when \
+            no previous ship was hit', function(){
+                let newBoard = new Gameboard();
+                let newAI = new Ai(newBoard, 'kryptex');
+
+                let generatedSquare = newAI.generateAttackCoordinate();
+                let isValidSquare = newAI.gameboard.isValidSquare(generatedSquare);
+                expect(isValidSquare).toBe(true);
+        });
+        test('generateAttackCoordinate works properly when \
+            there is a previous ship hit but no pivotSquare', function(){
+                let newBoard = new Gameboard();
+                let newAI = new Ai(newBoard, 'kryptex');
+
+                newAI.hasPreviousShipHit = true;
+
+                let dummyCoordinate = JSON.stringify([3,3]);
+                newAI.unavailableSquares.push(dummyCoordinate);
+
+                // This is when the coordinate is not at the edge of the board
+                let returnedSquare = newAI.generateAttackCoordinate();
+                expect(returnedSquare).toEqual([3,2]);
+                expect(newAI.currentAdjacentSquares).toEqual([[3, 4],[4,3],[2,3]]);
+                
+                newAI.unavailableSquares = [];
+                newAI.currentPivotSquare = [];
+                newAI.currentAdjacentSquares=[];
+
+                dummyCoordinate=JSON.stringify([1,1]);
+                newAI.unavailableSquares.push(dummyCoordinate)
+
+                // This is when the coordinate is at the edge of the board
+                returnedSquare = newAI.generateAttackCoordinate();
+                expect(returnedSquare).toEqual([1,2]);
+                expect(newAI.currentAdjacentSquares).toEqual([[2,1]]);
+        });
+        test('generateAttackCoordinate works properly when \
+            there are squares in the currentAdjacentSquares queue', function(){
+                let newBoard = new Gameboard();
+                let newAI = new Ai(newBoard, 'kryptex');
+
+                newAI.hasPreviousShipHit = true;
+                newAI.currentPivotSquare = [1,2];
+                newAI.currentAdjacentSquares.push([1,1]);
+
+                // With this, the function should return the currentAdjacentSquare
+                let generatedSquare = newAI.generateAttackCoordinate();
+                expect(generatedSquare).toEqual(generatedSquare);
+                expect(newAI.unavailableSquares).toEqual([JSON.stringify(generatedSquare)]);
+                expect(newAI.hasPreviousShipHit).toEqual(false);
+                expect(newAI.currentPivotSquare).toEqual([]);
+        });
+    });
 });

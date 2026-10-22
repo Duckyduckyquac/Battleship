@@ -1,12 +1,13 @@
 // Gameboard.js
 // contains the model representation of board
 let {Utility} = require('./utility.js');
+let {Coordinate}=require('./Coordinate.js');
 let utility = new Utility();
 
 class Gameboard{
     constructor(){
         // The format for this object would be:
-        // shipType: [square1,.... squareN]
+        // shipType string: [ coordinate1 object,.... coordinate2 object]
         // 
         this.occupiedSquares = {};
 
@@ -26,17 +27,17 @@ class Gameboard{
         let row2 = coord2.row;
         let column2 = coord2.column;
 
-        // Check1: if they are not diagonally placed
+        // Check 1: if they are not diagonally placed
         if((row1!=row2)&&(column1!=column2)){
             // If neither the rows nor columns match, it means 
             // that they're placed diagonally
             return false;
         }
-        // Check2: If the same square is inputted two times
+        // Check 2: If the same square is inputted two times
         else if((row1==row2)&&(column1==column2)){
             return false;
         }
-        // Check4: inclusive distance between squares
+        // Check 3: inclusive distance between squares (horizontal)
         else if(row1==row2){
             // This means that computing the distance does not require
             // computing for the row
@@ -47,7 +48,7 @@ class Gameboard{
                 // place the ship
                 let currentShipIdentifier = JSON.stringify(shipInstance.shipType);
                 let currentShipSquares = [];
-                // invalidSquares would contain all arrayLists of occupiedSquares
+                // invalidSquares would contain all coordinate object lists of occupiedSquares
                 // Therefore, it still needs to be looped through
                 let invalidSquares = Object.values(this.occupiedSquares);
                 for(let num of utility.range(columnSubtrahend,columnMinuend)){
@@ -59,14 +60,16 @@ class Gameboard{
 
                     let newCoordinate = [row1, num];
                     for(let coordinateList of invalidSquares){
-                        for(let coordinate of coordinateList){
-                            if((newCoordinate[0]===coordinate[0])&&
-                               (newCoordinate[1]===coordinate[1])){
+                        for(let coordinateObject of coordinateList){
+                            if((newCoordinate[0]===coordinateObject.row)&&
+                               (newCoordinate[1]===coordinateObject.column)){
                                 return false;
                                }
                         }
                     }
-                    currentShipSquares.push(newCoordinate)
+                    // If it passes, turn the newCoordinate into an object
+                    newCoordinate = new Coordinate(newCoordinate[0],newCoordinate[1]);
+                    currentShipSquares.push(newCoordinate);
                 }
 
                 this.occupiedSquares[currentShipIdentifier]=currentShipSquares;
@@ -77,6 +80,7 @@ class Gameboard{
                 return false;
             }
         }
+        // Check 3: inclusive distance between squares (vertical)
         else if(column1 == column2){
             // This means that computing the distance does not require
             // computing for the column
@@ -87,7 +91,7 @@ class Gameboard{
                 // place the ship
                 let currentShipIdentifier = JSON.stringify(shipInstance.shipType);
                 let currentShipSquares = [];
-                // invalidSquares would contain all arrayLists of occupiedSquares
+                // invalidSquares would contain all coordinate object lists of occupiedSquares
                 // Therefore, it still needs to be looped through
                 let invalidSquares = Object.values(this.occupiedSquares);
 
@@ -100,14 +104,16 @@ class Gameboard{
 
                     let newCoordinate = [num, column1];
                     for(let coordinateList of invalidSquares){
-                        for(let coordinate of coordinateList){
-                            if((newCoordinate[0]===coordinate[0])&&
-                               (newCoordinate[1]===coordinate[1])){
+                        for(let coordinateObject of coordinateList){
+                            if((newCoordinate[0]===coordinateObject.row)&&
+                               (newCoordinate[1]===coordinateObject.column)){
                                 return false;
                                }
                         }
                     }
-                    currentShipSquares.push(newCoordinate)
+                    // If it passes, turn the newCoordinate into an object
+                    newCoordinate = new Coordinate(newCoordinate[0], newCoordinate[1]);
+                    currentShipSquares.push(newCoordinate);
                 }
                 this.occupiedSquares[currentShipIdentifier]=currentShipSquares;
                 this.shipTypeToShip[currentShipIdentifier]=shipInstance;
@@ -133,24 +139,25 @@ class Gameboard{
             return false;
         }
 
-        // For each shipType in the this.occupiedSquares, we must determine
-        // if the shipType contains the coordinate that was attacked. 
-        // If it contains the coordinate, we set that coordinate as attacked 
+        /* 
+        For each shipType in this.occupiedSquares, we must determine
+        if the shipType contains the coordinate that was attacked. 
+        If it contains the coordinate, we set that coordinate as attacked 
+        */
 
-        // Step 2: See which ship got it, if any got hit
+        // Step 2: See which ship got hit, if any got hit
         for(let key of Object.keys(this.occupiedSquares)){
             let keyValue = this.occupiedSquares[key];
             let stop = false;
             // we then loop through the value of the current key
-            for(let coordinate of keyValue){
+            for(let coordinateObject of keyValue){
                 // if any of the coordinates match, we set validHit to true
                 // and also say that the key is attacked.
-                if((coordinate[0]===target[0])&&
-                   (coordinate[1]===target[1])){
+                if((coordinateObject.row===target[0])&&
+                   (coordinateObject.column===target[1])){
                     attackedShipType = key;
-                    validHit=true;
+                    validHit=true; // validHit means a ship got hit
                     stop = true;
-
                     break;
                    }
             }
@@ -171,7 +178,7 @@ class Gameboard{
             return false;
         }
         else if(validHit===false){
-            return false;
+            return false; //If there was no ship hit, return false
         }
     }
     allSunk(){

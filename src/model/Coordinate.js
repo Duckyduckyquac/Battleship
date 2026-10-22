@@ -1,8 +1,5 @@
 class Coordinate{
-    constructor(row, column){
-        this.row = row;
-        this.column = column;
-        this.columnMapping = {
+    static columnMapping = {
             "1":"A",
             "2":"B",
             "3":"C",
@@ -13,7 +10,13 @@ class Coordinate{
             "8":"H",
             "9":"I",
             "10":"J"
-        };
+    }
+    constructor(row, column){
+        this.row = row;
+        this.column = column;
+    }
+    getColumnLetter(){
+        return Coordinate.columnMapping[this.column];
     }
 }
 module.exports = {Coordinate};

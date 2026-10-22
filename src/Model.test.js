@@ -1,7 +1,6 @@
 // Model.test.js
 // This will involve tests for the model portion of the program
 
-const { experiments } = require('webpack');
 
 describe('Test for the model modules', function(){
     describe('Test for the Ship Module', function(){
@@ -75,7 +74,7 @@ describe('Test for the model modules', function(){
 
             expect(shipPlaced).toBe(true);
             expect(newBoard.shipTypeToShip).toEqual({"5":newShip});
-            expect(newBoard.occupiedSquares).toEqual({"5":[[1,1],[1,2]]});
+            expect(newBoard.occupiedSquares).toEqual({"5":[coord1,coord2]});
             
         })
         test('Vertical ship placement works properly', function(){
@@ -89,7 +88,7 @@ describe('Test for the model modules', function(){
 
             expect(shipPlaced).toBe(true);
             expect(newBoard.shipTypeToShip).toEqual({"5":newShip});
-            expect(newBoard.occupiedSquares).toEqual({"5":[[1,1],[2,1]]});
+            expect(newBoard.occupiedSquares).toEqual({"5":[coord1,coord2]});
         })
         test('placeShip() returns false for diagonal squares', function(){
             let newBoard = new Gameboard();
@@ -142,17 +141,17 @@ describe('Test for the model modules', function(){
             // Places the ship horizontally
             let spaceTakerPlaced = newBoard.placeShip(coord1,coord2,spaceTaker);
 
-            coord1= new Coordinate(1,1);
-            coord2 = new Coordinate(3,1);
+            let coord3= new Coordinate(1,1);
+            let coord4 = new Coordinate(3,1);
             // This ship will have a length of 3
             let testingShip = new Ship(4)
-            let testingShipPlaced = newBoard.placeShip(coord1,coord2,testingShip);
+            let testingShipPlaced = newBoard.placeShip(coord3,coord4,testingShip);
 
             expect(spaceTakerPlaced).toBe(true);
             expect(testingShipPlaced).toBe(false);
 
             expect(newBoard.shipTypeToShip).toEqual({"5":spaceTaker});
-            expect(newBoard.occupiedSquares).toEqual({"5":[[1,1],[1,2]]});
+            expect(newBoard.occupiedSquares).toEqual({"5":[coord1,coord2]});
         });
         test('receiveAttack works properly on occupied squares', function(){
             let newBoard = new Gameboard();
@@ -274,31 +273,34 @@ describe('Test for the model modules', function(){
                 expect(isValidSquare).toBe(true);
         });
         test('generateAttackCoordinate works properly when \
-            there is a previous ship hit but no pivotSquare', function(){
+            there is a previous ship hit and no coordinates in queue', function(){
                 let newBoard = new Gameboard();
                 let newAI = new Ai(newBoard, 'kryptex');
 
                 newAI.hasPreviousShipHit = true;
 
-                let dummyCoordinate = JSON.stringify([3,3]);
+                let dummyCoordinate = JSON.stringify(new Coordinate(3,3));
                 newAI.unavailableSquares.push(dummyCoordinate);
 
                 // This is when the coordinate is not at the edge of the board
                 let returnedSquare = newAI.generateAttackCoordinate();
-                expect(returnedSquare).toEqual([3,2]);
-                expect(newAI.currentAdjacentSquares).toEqual([[3, 4],[4,3],[2,3]]);
+                expect(returnedSquare).toEqual(new Coordinate(3,2));
+                expect(newAI.currentAdjacentSquares).toEqual([
+                                                              JSON.stringify(new Coordinate(3, 4)),
+                                                              JSON.stringify(new Coordinate(4,3)),
+                                                              JSON.stringify(new Coordinate(2,3))
+                                                            ]);
                 
                 newAI.unavailableSquares = [];
-                newAI.currentPivotSquare = [];
                 newAI.currentAdjacentSquares=[];
 
-                dummyCoordinate=JSON.stringify([1,1]);
-                newAI.unavailableSquares.push(dummyCoordinate)
+                dummyCoordinate=JSON.stringify(new Coordinate(1,1));
+                newAI.unavailableSquares.push(dummyCoordinate);
 
                 // This is when the coordinate is at the edge of the board
                 returnedSquare = newAI.generateAttackCoordinate();
-                expect(returnedSquare).toEqual([1,2]);
-                expect(newAI.currentAdjacentSquares).toEqual([[2,1]]);
+                expect(returnedSquare).toEqual(new Coordinate(1,2));
+                expect(newAI.currentAdjacentSquares).toEqual([JSON.stringify(new Coordinate(2,1))]);
         });
         test('generateAttackCoordinate works properly when \
             there are squares in the currentAdjacentSquares queue', function(){
@@ -306,15 +308,40 @@ describe('Test for the model modules', function(){
                 let newAI = new Ai(newBoard, 'kryptex');
 
                 newAI.hasPreviousShipHit = true;
-                newAI.currentPivotSquare = [1,2];
-                newAI.currentAdjacentSquares.push([1,1]);
+                newAI.currentAdjacentSquares.push(JSON.stringify(new Coordinate(1,1)));
 
                 // With this, the function should return the currentAdjacentSquare
                 let generatedSquare = newAI.generateAttackCoordinate();
-                expect(generatedSquare).toEqual(generatedSquare);
+                expect(generatedSquare).toEqual(new Coordinate(1,1));
                 expect(newAI.unavailableSquares).toEqual([JSON.stringify(generatedSquare)]);
                 expect(newAI.hasPreviousShipHit).toEqual(false);
-                expect(newAI.currentPivotSquare).toEqual([]);
+        });
+        test('randomlyPlaceShips works properly',function(){
+            let newBoard = new Gameboard();
+            let newAI = new Ai(newBoard, 'kryptex');
+
+            let isSuccessful = newAI.randomlyPlaceShips();
+
+            expect(isSuccessful).toEqual(true);
+            expect(Object.keys(newAI.gameboard.occupiedSquares).length).toEqual(5);
+            expect(Object.keys(newAI.gameboard.shipTypeToShip).length).toEqual(5);
+
+            let allValid = true;
+            let boardSquareList = Object.values(newAI.gameboard.occupiedSquares);
+            boardSquares = boardSquareList
+            .flatMap(function(squareList){
+                return squareList;
+            },this);
+            for(let square of boardSquares){
+                if(newAI.gameboard.isValidSquare(square)){
+                    continue;
+                }
+                else if(!newAI.gameboard.isValidSquare(square)){
+                    allValid = false;
+                }
+            }
+            expect(allValid).toEqual(true);
+
         });
     });
 });

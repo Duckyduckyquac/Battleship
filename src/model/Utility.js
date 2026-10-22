@@ -1,3 +1,4 @@
+const {Coordinate} = require('./Coordinate.js');
 class Utility{
 
     range(start, stop){
@@ -18,15 +19,19 @@ class Utility{
         return resultRange
     }
     randomBoardCoordinate(min,max){
+        if(min>max){
+            throw new Error("Min must be less than max");
+        }
         let randomCoordinate = Math.floor(Math.random()*(max-min+1))+min;
         return randomCoordinate;
     }
 
     populateBoardCoordinateList(){
+        // This would contain a list of coordinateObjects
         let boardList = [];
         for(let i = 1; i<=10 ;i++){
             for(let j = 1; j<= 10; j++){
-                let newCoordinate = [i, j];
+                let newCoordinate = new Coordinate(i, j);
                 let coordString = JSON.stringify(newCoordinate);
                 boardList.push(coordString);
             }

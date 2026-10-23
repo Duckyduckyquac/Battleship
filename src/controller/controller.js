@@ -1,10 +1,47 @@
+const {Player} = require('../model/Player.js');
+const {Ai} = require('../model/AI.js');
+const {Ship} = require('../model/Ship.js');
+const {Gameboard} = require('../model/Gameboard.js');
+const {Coordinate} = require('../model/Coordinate.js');
+
 class Controller{
     constructor(){
         
     }
-    communicateShipPlacement(coord1, coord2, shipInstance, gameboard){
+    
+    createCoordinate(row, column){
+        let newCoordinate = new Coordinate(row, column);
+        return newCoordinate;
+    }
+
+    createGameboard(){
+        let newGameboard = new Gameboard();
+        return newGameboard;
+    }
+
+    createShipForPlayer(shipType){
+        let newShip = new Ship(shipType);
+        return newShip;
+    }
+
+    createPlayer(gameboard, name, score=0){
+        let newPlayer = new Player(gameboard, name, score);
+        return newPlayer;
+    }
+    
+    createAi(gameboard, name, score){
+        let newAi = new Ai (gameboard, name, score);
+        return newAi;
+    }
+
+    communicatePlayerShipPlacement(coord1, coord2, shipInstance, gameboard){
         let isSuccessful = gameboard.placeShip(coord1, coord2, shipInstance);
-        return (isSuccessful)? true:false;
+        return isSuccessful;
+    }
+
+    communicateAiShipPlacement(enemyAi){
+        let isSuccessful = enemyAi.randomlyPlaceShips();
+        return isSuccessful;
     }
 
     communicateAttackedSquareToAi(attackedCoordinate, enemyGameboard, enemyAi){
@@ -17,9 +54,9 @@ class Controller{
         // In this case, we pass the coordinate onto the enemyGameboard
         let isSuccessful = enemyGameboard.receiveAttack(attackedCoordinate);
 
-        enemyAi.hasPreviousShipHit = (isSuccessful)? true:false;
+        enemyAi.hasPreviousShipHit = isSuccessful
         
-        return (isSuccessful)? true : false;
+        return isSuccessful;
     }
 
     communicateAttackedSquareToPlayer(attackedCoordinate, playerGameboard, player){
@@ -30,8 +67,8 @@ class Controller{
 
         // Case 2: not every ship is sunk
         // In this case, we pass the coordinate onto the playerGameboard
-        let isSuccessful = enemyGameboard.receiveAttack(attackedCoordinate);
-        return (isSuccessful)? true : false;
+        let isSuccessful = playerGameboard.receiveAttack(attackedCoordinate);
+        return isSuccessful
     }
 }
 

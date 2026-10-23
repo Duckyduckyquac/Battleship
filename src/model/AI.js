@@ -124,7 +124,9 @@ class Ai extends Player{
         let currentShipType = 1;
         let availableSquares = this.utility.populateBoardCoordinateList();
         let shipOrientation = ["horizontal", "vertical"];
-
+        if(this.gameboard.allSunk()){
+            return false;
+        }
         while(Object.keys(this.gameboard.occupiedSquares).length < 5){
            let boardOccupiedSquares = Object.values(this.gameboard.occupiedSquares)
            .flatMap(function(squareList){

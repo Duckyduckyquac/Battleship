@@ -4,7 +4,7 @@
 
 describe('Test for the model modules', function(){
     describe('Test for the Ship Module', function(){
-        let {Ship} = require('./model/Ship.js');
+        let {Ship} = require('../model/Ship.js');
         test('Creating a ship with shipType 1 makes the shipLength 5, and initializes numOfHit to be 0', function(){
             // Create the new ship instance with shipType 1
             let newShip = new Ship(1);
@@ -43,7 +43,7 @@ describe('Test for the model modules', function(){
     });
 
     describe('Test for the Coordinate Module', function(){
-        let {Coordinate} = require('./model/Coordinate.js');
+        let {Coordinate} = require('../model/Coordinate.js');
         test('Check if row and column are initialized properly upon creation', function(){
             let newCoordinate = new Coordinate(1,2);
             expect(newCoordinate.row).toEqual(1);
@@ -51,9 +51,9 @@ describe('Test for the model modules', function(){
         });        
     });
     describe('Test for GameBoard Module', function(){
-        let { Gameboard } = require('./model/Gameboard.js');
-        let { Ship } = require('./model/Ship.js');
-        let {Coordinate} = require('./model/Coordinate.js');
+        let { Gameboard } = require('../model/Gameboard.js');
+        let { Ship } = require('../model/Ship.js');
+        let {Coordinate} = require('../model/Coordinate.js');
 
         test('Gameboard is initialized properly', function(){
             let newBoard = new Gameboard();
@@ -231,8 +231,8 @@ describe('Test for the model modules', function(){
             });
     });
     describe('Test for Player Module', function(){
-        let { Gameboard } = require('./model/Gameboard.js');
-        let {Player} = require('./model/Player.js');
+        let { Gameboard } = require('../model/Gameboard.js');
+        let {Player} = require('../model/Player.js');
 
         test('Player is initialized properly', function(){
             let newBoard = new Gameboard();
@@ -244,10 +244,10 @@ describe('Test for the model modules', function(){
         });
     });
     describe('Test for AI Module', function(){
-        let { Gameboard } = require('./model/Gameboard.js');
-        let { Ship } = require('./model/Ship.js');
-        let {Coordinate} = require('./model/Coordinate.js');
-        let {Ai} = require('./model/AI.js');
+        let { Gameboard } = require('../model/Gameboard.js');
+        let { Ship } = require('../model/Ship.js');
+        let {Coordinate} = require('../model/Coordinate.js');
+        let {Ai} = require('../model/AI.js');
 
         test('AI is in initialized properly', function(){
             let newBoard = new Gameboard();

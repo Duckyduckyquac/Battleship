@@ -1,5 +1,5 @@
 // Utility.test.js
-let {Utility} = require('../model/utility.js');
+let {Utility} = require('../utilities/Utility.js');
 
 describe('Test for the Utility Module', function(){
     let utility = new Utility();

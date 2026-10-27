@@ -1,4 +1,4 @@
-const {Coordinate} = require('./Coordinate.js');
+const {Coordinate} = require('../model/Coordinate.js');
 class Utility{
 
     range(start, stop){

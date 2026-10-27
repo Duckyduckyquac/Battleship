@@ -2,7 +2,7 @@
 // This will involve tests for the model portion of the program
 
 
-describe('Test for the model modules', function(){
+describe('Test for model modules', function(){
     describe('Test for the Ship Module', function(){
         let {Ship} = require('../model/Ship.js');
         test('Creating a ship with shipType 1 makes the shipLength 5, and initializes numOfHit to be 0', function(){
@@ -277,12 +277,11 @@ describe('Test for the model modules', function(){
                 let newBoard = new Gameboard();
                 let newAI = new Ai(newBoard, 'kryptex');
 
-                newAI.hasPreviousShipHit = true;
-
                 let dummyCoordinate = JSON.stringify(new Coordinate(3,3));
                 newAI.unavailableSquares.push(dummyCoordinate);
 
                 // This is when the coordinate is not at the edge of the board
+                newAI.hasPreviousShipHit=true;
                 let returnedSquare = newAI.generateAttackCoordinate();
                 expect(returnedSquare).toEqual(new Coordinate(3,2));
                 expect(newAI.currentAdjacentSquares).toEqual([
@@ -296,7 +295,8 @@ describe('Test for the model modules', function(){
 
                 dummyCoordinate=JSON.stringify(new Coordinate(1,1));
                 newAI.unavailableSquares.push(dummyCoordinate);
-
+                
+                newAI.hasPreviousShipHit=true;
                 // This is when the coordinate is at the edge of the board
                 returnedSquare = newAI.generateAttackCoordinate();
                 expect(returnedSquare).toEqual(new Coordinate(1,2));
@@ -306,15 +306,13 @@ describe('Test for the model modules', function(){
             there are squares in the currentAdjacentSquares queue', function(){
                 let newBoard = new Gameboard();
                 let newAI = new Ai(newBoard, 'kryptex');
-
-                newAI.hasPreviousShipHit = true;
                 newAI.currentAdjacentSquares.push(JSON.stringify(new Coordinate(1,1)));
 
+                newAI.hasPreviousShipHit=true;
                 // With this, the function should return the currentAdjacentSquare
                 let generatedSquare = newAI.generateAttackCoordinate();
                 expect(generatedSquare).toEqual(new Coordinate(1,1));
                 expect(newAI.unavailableSquares).toEqual([JSON.stringify(generatedSquare)]);
-                expect(newAI.hasPreviousShipHit).toEqual(false);
         });
         test('randomlyPlaceShips works properly',function(){
             let newBoard = new Gameboard();

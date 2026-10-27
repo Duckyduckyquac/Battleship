@@ -45,13 +45,11 @@ class Controller{
     }
 
     communicateAttackedSquareToAi(attackedCoordinate, enemyGameboard, enemyAi){
-        // Case 1: All ships are already sunk
+
         if(enemyGameboard.allSunk()){
             return false; // returning false means it's unsuccessful
         }
         
-        // Case 2: not every ship is sunk
-        // In this case, we pass the coordinate onto the enemyGameboard
         let isSuccessful = enemyGameboard.receiveAttack(attackedCoordinate);
 
         enemyAi.hasPreviousShipHit = isSuccessful
@@ -59,16 +57,23 @@ class Controller{
         return isSuccessful;
     }
 
-    communicateAttackedSquareToPlayer(attackedCoordinate, playerGameboard, player){
-        // Case 1: All player ships are already sunk
+    /**
+     * 
+     * @param {Ai} AiInstance 
+     * @param {Gameboard} playerGameboard 
+     * @returns {boolean}
+     */
+    communicateAttackedSquareToPlayer(AiInstance, playerGameboard){
         if(playerGameboard.allSunk()){
-            return false; 
+            return false;
         }
 
-        // Case 2: not every ship is sunk
-        // In this case, we pass the coordinate onto the playerGameboard
-        let isSuccessful = playerGameboard.receiveAttack(attackedCoordinate);
-        return isSuccessful
+        let coordinateToAttack = AiInstance.generateAttackCoordinate();
+        let isSuccessful = playerGameboard.receiveAttack(coordinateToAttack);
+
+        AiInstance.hasPreviousShipHit = isSuccessful;
+
+        return isSuccessful;
     }
 }
 

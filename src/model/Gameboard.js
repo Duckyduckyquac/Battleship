@@ -1,6 +1,6 @@
 // Gameboard.js
 // contains the model representation of board
-let {Utility} = require('./utility.js');
+let {Utility} = require('../utilities/Utility.js');
 let {Coordinate}=require('./Coordinate.js');
 let utility = new Utility();
 
@@ -212,6 +212,12 @@ class Gameboard{
         else{
             return true;
         }
+    }
+    resetGameboard(){
+        this.occupiedSquares = {};
+        this.shipTypeToShip = {};
+        this.attackedSquares = {};
+        return true;
     }
 }
 

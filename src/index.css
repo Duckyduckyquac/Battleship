@@ -162,8 +162,8 @@
 .gameboard-screen .grid{
 
     display: grid;
-    height: min(50vw, 400px);
-    width: min(50vw, 400px);
+    height: min(90vw, 400px);
+    width: min(90vw, 400px);
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(10, 1fr);
     

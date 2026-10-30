@@ -162,8 +162,8 @@
 .gameboard-screen .grid{
 
     display: grid;
-    height: min(30vw, 400px);
-    width: min(30vw, 400px);
+    height: min(50vw, 400px);
+    width: min(50vw, 400px);
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(10, 1fr);
     
@@ -203,7 +203,7 @@
 .gameboard-screen .gameboard-screen__enemy-grid .enemy-grid__square--missed{
     background-color: var(--ship-missed);
 }
-@media (max-width: 950px) {
+@media (max-width: 1500px) {
     .gameboard-screen {
         display: flex;
         flex-direction: column;

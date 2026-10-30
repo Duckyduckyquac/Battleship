@@ -21,6 +21,18 @@ class Ai extends Player{
         this.hasPreviousShipHit = false;
     }
 
+    /**
+     * 
+     * @param {Coordinate} coordinate 
+     * @param {boolean} wasHit 
+     */
+    registerPreviousAttackResult(coordinate, wasHit){
+        if(wasHit){
+            this.hasPreviousShipHit = true;
+            this.lastHitCoordinate = coordinate;
+        }
+    }
+
 
     generateAttackCoordinate(){
         this.#updatePlayerAvailableSquares();
@@ -63,8 +75,7 @@ class Ai extends Player{
     }
 
      #generateAdjacentSquares(){
-        let mostRecentUnavailableSquare = JSON.parse(this.unavailableSquares[this.unavailableSquares.length-1]);
-        let pivotSquare = mostRecentUnavailableSquare;
+        let pivotSquare = this.lastHitCoordinate;
 
         let adjacentSquares = [];
 
@@ -184,6 +195,7 @@ class Ai extends Player{
         const shipOrientationArray = ["horizontal", "vertical"];
 
         let startCoordinate = JSON.parse(availableSquares[this.utility.randomBoardCoordinate(0,availableSquares.length-1)]);
+        startCoordinate = new Coordinate(startCoordinate.row, startCoordinate.column);
         let endCoordinate = new Coordinate(1,1);
 
         let currentOrientation = shipOrientationArray[this.utility.randomBoardCoordinate(0, shipOrientationArray.length-1)];

@@ -16,12 +16,12 @@ class View{
 
                 if(event.target.closest(".header__button-group")!=null){
                     this.handleHeaderButtonGroup(event);
-                }
+                }   
 
             }
 
             // ----- Main section operations -----
-            else if(event.target.closest('#main-section')){
+            else if(event.target.closest('#main-display-section')){
                 event.preventDefault();
                 
                 if(event.target.closest(".player-creation-screen")!=null){
@@ -45,7 +45,7 @@ class View{
                 </div>
 
                 <div class = "input-wrapper player-creation-screen__input-wrapper">
-                    <button class="input-wrapper__button">Start Game</button>
+                    <button class="standard-button input-wrapper__standard-button">Start Game</button>
                 </div>
             </div>
         `;
@@ -62,7 +62,7 @@ class View{
      */
 
     /**
-     * @typedef {Object} Board
+     * @typedef {Object} parsedBoardInformationForView
      * @property {Array<Coordinate>} baseSquares: contains all default squares
      * @property {Array<String>} [occupiedSquares] : Optional parameter only used for player
      * @property {Object.<string,boolean>} attackedSquares : Map of hit squares and if they were hit/miss
@@ -70,8 +70,8 @@ class View{
 
     /**
      * Shows the gameBoardScreen by using the following parameters passed by entryPoint
-     * @param {Board} playerBoard : The player gameboard data
-     * @param {Board} enemyBoard : The enemy gameboard data
+     * @param {parsedBoardInformationForView} playerBoard : The player gameboard data containing the previous datatypes
+     * @param {parsedBoardInformationForView} enemyBoard : The enemy gameboard data containing the previous datatypes   
      */
 
     showGameboardScreen(playerBoard, enemyBoard){
@@ -82,41 +82,48 @@ class View{
         
         let gameboardScreen = `
             <div class = "gameboard-screen">
-                ${enemyGrid}
-                ${playerGrid}
+                <div>
+                    <span>Enemy Board</span>
+                    ${enemyGrid}
+                </div>
+                <div>
+                    <span>Player Board</span>
+                    ${playerGrid}
+                </div>
                 ${shipTypeSelectionPanel}
             </div>
         `;
 
         this.displaySection.innerHTML=gameboardScreen;
     }
+    
     #generateShipTypeSelectionPanel(){
         let typePanels = this.#generateTypePanels();
 
         let shipTypeSelectionPanel = `
-        <div class="gameboard-screen__ship-type-selection-panel">
+        <div class="ship-type-selection-panel gameboard-screen__ship-type-selection-panel">
             <span>Choose the Ship Type to Place</span>
             ${typePanels}
         </div>
         `;
         return shipTypeSelectionPanel;
     }
-
     #generateTypePanels(){
         let shipTypes = [1,2,3,4,5];
+        let lengthMapping = [5, 4, 3, 3, 2]
         let typePanels = ``;
-        for(let shipType of shipTypes){
+        for(let i=0 ; i<= shipTypes.length-1; i++){
             let currentPanel = `
-            <div class="ship-type-selection-panel__type-panel" data-shiptype="${shipType}">
-                 ${shipType}
+            <div class="standard-button type-panel ship-type-selection-panel__type-panel" data-shiptype="${shipTypes[i]}">
+                 ${shipTypes[i]} | Length ${lengthMapping[i]}
             </div>
             `;
 
-            if(this.shipTypeToPlace == shipType){
+            if(this.shipTypeToPlace == shipTypes[i]){
                 currentPanel = 
-                `<div class="ship-type-selection-panel__type-panel 
-                ship-type-selection-panel__type-panel--selected" data-shiptype = "${shipType}">
-                    ${shipType}
+                `<div class="standard-button type-panel ship-type-selection-panel__type-panel 
+                ship-type-selection-panel__type-panel--selected" data-shiptype = "${shipTypes[i]}">
+                    ${shipTypes[i]} | Length ${lengthMapping[i]}
                 </div>
                 `;
             }
@@ -131,14 +138,11 @@ class View{
         switch(gridType){
             case "player":
                 let stringifiedOccupiedSquares = board.occupiedSquares
-                .map((square)=>{
-                    return JSON.stringify(square);
-                });
 
                 let playerGridSquares = this.#generateGridSquares(board, gridType, stringifiedOccupiedSquares);
 
                 let playerGrid = `
-                <div class="gameboard-screen__${gridType}-grid">
+                <div class="grid gameboard-screen__${gridType}-grid">
                     ${playerGridSquares}
                 </div>
                 `;
@@ -147,7 +151,7 @@ class View{
                 let enemyGridSquares = this.#generateGridSquares(board, gridType);
 
                 let enemyGrid = `
-                <div class="gameboard-screen__${gridType}-grid">
+                <div class="grid gameboard-screen__${gridType}-grid">
                     ${enemyGridSquares}
                 </div>
                 `;
@@ -160,7 +164,7 @@ class View{
             // This is a square of baseSquares
             // The next checks would determine the other classes it should have
             let cell = `
-            <div class = "${gridSquareType}-grid__square"
+            <div class = "square ${gridSquareType}-grid__square"
             data-row="${square.row}" data-column = "${square.column}"
             >
 
@@ -171,7 +175,7 @@ class View{
                 // Check 1.1: square was hit
                 if(board.attackedSquares[JSON.stringify(square)]===true){
                     cell = `
-                    <div class = "${gridSquareType}-grid__square ${gridSquareType}-grid__square--hit"
+                    <div class = "square ${gridSquareType}-grid__square ${gridSquareType}-grid__square--hit"
                     data-row="${square.row}" data-column = "${square.column}"
                     >
 
@@ -181,7 +185,7 @@ class View{
                 // Check 2.2: Square was a missed hit
                 else if(board.attackedSquares[JSON.stringify(square)]===false){
                     cell = `
-                    <div class = "${gridSquareType}-grid__square ${gridSquareType}-grid__square--missed"
+                    <div class = "square ${gridSquareType}-grid__square ${gridSquareType}-grid__square--missed"
                     data-row="${square.row}" data-column = "${square.column}"
                     >
 
@@ -197,7 +201,7 @@ class View{
             // Check 2: square was not hit, but occupied (This is only for players)
             else if(stringifiedOccupiedSquares.includes(JSON.stringify(square))){
                 cell = `
-                <div class = "${gridSquareType}-grid__square ${gridSquareType}-grid__square--occupied"
+                <div class = "square ${gridSquareType}-grid__square ${gridSquareType}-grid__square--occupied"
                 data-row="${square.row}" data-column = "${square.column}"
                 >
 
@@ -210,23 +214,38 @@ class View{
         return gridSquares;
     }
 
+    /**
+     * 
+     * @param {Player, Ai} playerInstance 
+     */
+    showWinningScreen(playerInstance){
+        let winningScreen = `
+        <div class = "gameboard-screen__winning-screen">
+            <span>${playerInstance.name} won the game!</span>
+        </div>
+        `;
+
+        this.displaySection.innerHTML=winningScreen;
+    }
+
     // ============================================================
     // Binding communication callback
     // ============================================================ 
 
-    bindRequestCommunication(callbackFromEntry){
-        this.onRequest = callbackFromEntry;
+    bindRequestCommunication(controllerCallback){
+        this.onRequest = controllerCallback;
     }
 
     // ============================================================
     // UI helper methods
     // ============================================================
     handleHeaderButtonGroup(event){
-        if(event.target.closest(".button-group__main-button")==null){return};
+        if(event.target.closest(".button-group__standard-button")==null){return};
 
-                let targetedButton = event.target.closest(".button-group__main-button");
+                let targetedButton = event.target.closest(".button-group__standard-button");
                 if(targetedButton.id==="new-game-button"){
-                    this.showPlayerCreationScreen();
+                    let wrappedRequest = this.#wrapRequest("newGame");
+                    this.onRequest(wrappedRequest);
                 }
 
                 else if (targetedButton.id === "reset-game-button"){
@@ -235,15 +254,16 @@ class View{
                 }
 
                 else if (targetedButton.id === "see-board-button"){
-                    this.showGameboardScreen();
+                    let wrappedRequest = this.#wrapRequest("showGameboardScreen");
+                    this.onRequest(wrappedRequest);
                 }
     }
 
     handlePlayerCreationScreen(event){
-        if(event.target.closest(".input-wrapper__button")==null){return};
+        if(event.target.closest(".input-wrapper__standard-button")==null){return};
             let playerName = event.target.closest('.player-creation-screen').querySelector("#name-input").value;
 
-            let wrappedRequest = this.#wrapRequest("createPlayer", [playerName]);
+            let wrappedRequest = this.#wrapRequest("createPlayerAndEnemy", [playerName]);
             this.onRequest(wrappedRequest);
     }
 
@@ -280,18 +300,18 @@ class View{
                 let currentTargetedSquare = event.target.closest(".player-grid__square");
 
                 let previousData = {
-                    "row": previousTargetedSquare.dataset.row,
-                    "column": previousTargetedSquare.dataset.column
+                    "row": Number(previousTargetedSquare.dataset.row),
+                    "column": Number(previousTargetedSquare.dataset.column)
                 };
 
                 let currentData = {
-                    "row": currentTargetedSquare.dataset.row,
-                    "column": currentTargetedSquare.dataset.column
+                    "row": Number(currentTargetedSquare.dataset.row),
+                    "column": Number(currentTargetedSquare.dataset.column)
                 }
 
                 this.selectedShipPlacementSquare=null;
 
-                let wrappedRequest = this.#wrapRequest("placeShip", [previousData, currentData]);
+                let wrappedRequest = this.#wrapRequest("placeShip", [previousData, currentData, this.shipTypeToPlace]);
                 this.onRequest(wrappedRequest);
             }
         }
@@ -302,7 +322,9 @@ class View{
                 return;
             }
             let targetedPanel = event.target.closest(".ship-type-selection-panel__type-panel");
-            this.shipTypeToPlace = targetedPanel.dataset.shiptype;
+            this.shipTypeToPlace = Number(targetedPanel.dataset.shiptype);
+            let wrappedRequest = this.#wrapRequest("changeShipTypeSelection");
+            this.onRequest(wrappedRequest)
         }
     }
 

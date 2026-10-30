@@ -1,0 +1,302 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Debugging Utility: comment when not in use */
+
+/* *{
+    outline: 2px dotted red;
+} */
+
+/* ----- Root Elements ----- */
+
+:root {
+    /* Color Theme */
+    --main-bg: #0f172a;
+    --card-bg: #1e293b;
+    --text-color: #f8fafc;
+    --main-accent: #3b82f6;
+    --ship-normal: var(--main-accent);
+    --ship-hit: #ef4444;
+    --ship-missed: #64748b;
+    --ship-occupied: #0ea539;
+    --outline-color: white;
+
+    --button-bg: var(--main-accent);
+    --button-hover-color: #60a5fa;
+    --button-active-color: #2563eb;
+
+    --box-shadow-1: 0 8px 24px rgba(0,0,0,0.4);
+
+    /* sizes */
+    --text-size-1: 1rem;
+    --text-size-2: 1.25rem;
+    --text-size-3: 1.5rem;
+    --text-size-4: 2rem;
+
+    --spacer-size-0: 0.5rem;
+    --spacer-size-1: 1rem;
+    --spacer-size-2: 1.25rem;
+    --spacer-size-3: 1.5rem;
+
+    --border-radius-1: 10px;
+}
+
+/* ------ Main Container ----- */
+
+#main-container{
+    display:flex;
+    flex-direction: column;
+
+    background-color: var(--main-bg);
+    color: var(--text-color);
+    min-height: 100vh;
+    overflow-y: auto;
+}
+/* Header */
+#main-header{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: var(--spacer-size-1);
+    gap: var(--spacer-size-1);
+    
+    background-color: var(--card-bg);
+}
+
+#main-header h1{
+    font-size:var(--text-size-4);
+}
+
+.header__button-group{
+    display:flex;
+    flex-direction: row;
+    gap: var(--spacer-size-1)
+}
+
+/*  Main Display Section */
+#main-display-section{
+    display:flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    align-items:center;
+    justify-content: center;
+    
+    margin: var(--spacer-size-1);
+
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-1);
+
+    box-shadow: var(--box-shadow-1);
+}
+
+/* Player Creation Screen */
+.player-creation-screen{
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+    min-width: min(40%, 400px);
+    max-width: 400px;
+    min-height:50%;
+
+    background-color: var(--main-bg);
+    border-radius: var(--border-radius-1);
+
+    flex-grow: 1;
+    margin: var(--spacer-size-1);
+    padding: var(--spacer-size-3);
+
+    gap: var(--spacer-size-3);
+    
+    box-shadow: var(--box-shadow-1);
+}
+
+.player-creation-screen .input-description{
+    font-size: var(--text-size-2);
+}
+
+/* Gameboard Screen */
+.gameboard-screen {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    grid-template-areas: "ship-type-selection player-grid enemy-grid";
+
+    justify-items: center;
+}
+
+/* Shiptype Selection Panel */
+.gameboard-screen .ship-type-selection-panel{
+    display:flex;
+    flex-direction: column;
+    padding: var(--spacer-size-1);
+    margin: var(--spacer-size-1);
+    grid-area: ship-type-selection;
+    
+    background-color: var(--main-bg);
+    border-radius: var(--border-radius-1);
+    box-shadow: var(--box-shadow-1);
+}
+
+.ship-type-selection-panel span{
+    margin: var(--spacer-size-1);
+    font-size: var(--text-size-2);
+}
+
+.ship-type-selection-panel .ship-type-selection-panel__type-panel {
+    display: flex;
+    justify-content: center;
+    padding: var(--spacer-size-1);
+    margin: var(--spacer-size-2);
+}
+
+.ship-type-selection-panel .ship-type-selection-panel__type-panel--selected{
+    outline: 4px solid var(--outline-color);
+    background-color: var(--button-active-color);
+}
+
+/* Grids and Squares */
+.gameboard-screen .grid{
+
+    display: grid;
+    height: min(30vw, 400px);
+    width: min(30vw, 400px);
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    
+    margin: var(--spacer-size-2);
+}
+
+.gameboard-screen .grid .square{
+    min-width:10%;
+    min-height: 10%;
+    background-color: var(--ship-normal);
+    outline: 2px solid var(--outline-color);
+}
+
+.gameboard-screen__player-grid{
+    grid-area: player-grid;
+}
+
+
+.gameboard-screen__enemy-grid{
+    grid-area: enemy-grid;
+}
+
+.gameboard-screen .gameboard-screen__player-grid .player-grid__square--hit{
+    background-color: var(--ship-hit);
+}
+.gameboard-screen .gameboard-screen__player-grid .player-grid__square--missed{
+    background-color: var(--ship-missed);
+}
+.gameboard-screen .gameboard-screen__player-grid .player-grid__square--occupied{
+    background-color: var(--ship-occupied);
+}
+
+
+.gameboard-screen .gameboard-screen__enemy-grid .enemy-grid__square--hit{
+    background-color: var(--ship-hit);
+}
+.gameboard-screen .gameboard-screen__enemy-grid .enemy-grid__square--missed{
+    background-color: var(--ship-missed);
+}
+@media (max-width: 950px) {
+    .gameboard-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        gap: var(--spacer-size-2);
+        padding-bottom: var(--spacer-size-3);
+    }
+
+    /* Wrap ship selection buttons horizontally instead of a tall vertical column */
+    .gameboard-screen .ship-type-selection-panel {
+        width: min(90vw, 400px);
+        margin: 0;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--spacer-size-0);
+    }
+
+    .ship-type-selection-panel span {
+        width: 100%;
+        text-align: center;
+        margin: var(--spacer-size-0);
+    }
+
+    .ship-type-selection-panel .ship-type-selection-panel__type-panel {
+        margin: var(--spacer-size-0);
+        padding: var(--spacer-size-0) var(--spacer-size-1);
+        font-size: var(--text-size-1);
+    }
+}
+
+/* Winning Screen */
+
+.gameboard-screen__winning-screen{
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+    min-width: min(40%, 400px);
+    max-width: 400px;
+    min-height:50%;
+
+    background-color: var(--main-bg);
+    border-radius: var(--border-radius-1);
+
+    flex-grow: 1;
+    margin: var(--spacer-size-1);
+    padding: var(--spacer-size-3);
+
+    gap: var(--spacer-size-3);
+    
+    box-shadow: var(--box-shadow-1);
+}
+
+/* Main Footer */
+#main-footer{
+    display: grid;
+    background-color: var(--card-bg);
+    justify-items: center;
+    padding: var(--spacer-size-0);
+}
+#main-footer a{
+    color: var(--text-color);
+}
+#main-footer a:hover{
+    color: var(--main-accent);
+}
+
+/* -----Reusable Elements----- */
+.standard-button{
+    background-color: var(--button-bg);
+    color: var(--text-color);
+    outline: 2px solid var(--outline-color);
+    border-radius: var(--border-radius-1);
+    padding: var(--spacer-size-0);
+
+    box-shadow: var(--box-shadow-1);
+}
+
+.standard-button:hover{
+    background-color: var(--button-hover-color);
+}
+
+.standard-button:active{
+    background-color: var(--button-active-color);
+}
+
+.input-wrapper{
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacer-size-0);
+    gap: var(--spacer-size-1);
+
+    text-align: center;
+}

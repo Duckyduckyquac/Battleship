@@ -10,15 +10,39 @@ class GameManager{
      * @param {Player} player 
      * @param {Ai} enemy 
      */
-    constructor(player, enemy){
-        this.player = player;
-        this.enemy = enemy;
+    constructor(){
+        this.player = null;
+        this.enemy = null;
 
         this.phases = ["shipPlacement", "attacking"];
         this.currentPhase = this.phases[0];
 
         this.whoWon = null;
     }
+
+    /**
+     * 
+     * @param {String} playerName 
+     */
+    createPlayer(playerName){
+        let newGameboard = new Gameboard();
+        let newPlayer = new Player(newGameboard, playerName);
+        this.player = newPlayer;
+    }
+
+    /**
+     * 
+     * @param {String} enemyName 
+     */
+    createEnemy(enemyName){
+        let newGameboard = new Gameboard();
+        let newEnemy = new Ai(newGameboard, enemyName);
+        this.enemy = newEnemy;
+    }
+    /**
+     * 
+     * @param {Number} shipType 
+     */
 
     hasWin(){
         let playerGameboard = this.player.gameboard;
@@ -48,11 +72,12 @@ class GameManager{
             return false;
         }
 
-        let playerAttackSucessful = this.#communicateAttackToAi(attackedCoordinate);
-        if(!playerAttackSucessful){
+        let playerAttackValid = this.#communicateAttackToAi(attackedCoordinate);
+
+        if(playerAttackValid === null){
             return false;
         }
-        
+
         let playerWon = this.hasWin();
 
         if(playerWon){
@@ -60,9 +85,6 @@ class GameManager{
         }
 
         let enemyAttackSuccessful = this.#communicateAttackToPlayer();
-        if(!enemyAttackSuccessful){
-            return false;
-        }
         
         let enemyWon = this.hasWin();
 
@@ -82,20 +104,28 @@ class GameManager{
     #communicateAttackToPlayer(){
         let attackedCoordinate = this.enemy.generateAttackCoordinate();
         let isSuccessful = this.player.gameboard.receiveAttack(attackedCoordinate);
+        this.enemy.registerPreviousAttackResult(attackedCoordinate, isSuccessful);
         return isSuccessful;
     }
 
-    handleShipPlacementPhase(coord1, coord2, shipInstance){
+    /**
+     * 
+     * @param {Coordinate} coord1 
+     * @param {Coordinate} coord2 
+     * @param {Number} shipTypeToPlace
+     */
+    handleShipPlacementPhase(coord1, coord2, shipTypeToPlace){
         this.currentPhase = this.phases[0];
 
-        if(this.enemy.gameboard.shipTypeToShip.length!==5){
+        if(Object.keys(this.enemy.gameboard.shipTypeToShip).length!==5){
             this.#initializeAiShips();
         }
-        
-        this.#placePlayerShip(coord1, coord2, shipInstance);
-        if(this.player.gameboard.shipTypeToShip.length===5){
+        let shipInstance = new Ship(shipTypeToPlace);
+        let placementSuccessful = this.#placePlayerShip(coord1, coord2, shipInstance);
+        if(Object.keys(this.player.gameboard.shipTypeToShip).length===5){
             this.currentPhase = this.phases[1];
         }
+        return placementSuccessful;
     }
 
     #initializeAiShips(){
@@ -110,4 +140,27 @@ class GameManager{
         let isSucessful = this.player.gameboard.placeShip(coord1, coord2, shipInstance);
         return isSucessful;
     }
+
+    newGame(){
+        if(this.player===null||this.enemy===null){
+            return false;
+        }
+        this.player = null;
+        this.enemy = null;
+    }
+
+    resetGame(){
+        if(this.player===null||this.enemy===null){
+            return false;
+        }
+        this.player.resetPlayerScore();
+
+        this.enemy.resetPlayerScore();
+        this.enemy.resetAiAttackingInformation();
+
+        this.player.gameboard.resetGameboard();
+        this.enemy.gameboard.resetGameboard();
+    }
 }
+
+module.exports = {GameManager};

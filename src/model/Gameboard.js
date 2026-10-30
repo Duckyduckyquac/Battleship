@@ -17,7 +17,7 @@ class Gameboard{
 
         // would contain the coordinates that were already attacked
         // so that it cannot be attacked again
-        // Format is: [coordinate]: wasValidHit
+        // Format is: [coordinateObjectString]: wasValidHit
         this.attackedSquares = {};
     }
 
@@ -131,31 +131,25 @@ class Gameboard{
         let target = [row, column];
         let validHit = false;
 
-        let attackedShipType = "";
+        let key = JSON.stringify(new Coordinate(row, column));
 
-        // Step 1: See if the square already got attacked before
-        let attackedSquareCoordinates = Object.keys(this.attackedSquares);
-        if(attackedSquareCoordinates.includes(JSON.stringify(target))==true){
-            return false;
+        if(key in this.attackedSquares){
+            return null;
         }
 
-        /* 
-        For each shipType in this.occupiedSquares, we must determine
-        if the shipType contains the coordinate that was attacked. 
-        If it contains the coordinate, we set that coordinate as attacked 
-        */
+        let attackedShipType = "";
 
         // Step 2: See which ship got hit, if any got hit
-        for(let key of Object.keys(this.occupiedSquares)){
-            let keyValue = this.occupiedSquares[key];
+        for(let shipType of Object.keys(this.occupiedSquares)){
+            let shipTypeValue = this.occupiedSquares[shipType];
             let stop = false;
             // we then loop through the value of the current key
-            for(let coordinateObject of keyValue){
+            for(let coordinateObject of shipTypeValue){
                 // if any of the coordinates match, we set validHit to true
                 // and also say that the key is attacked.
                 if((coordinateObject.row===target[0])&&
                    (coordinateObject.column===target[1])){
-                    attackedShipType = key;
+                    attackedShipType = shipType;
                     validHit=true; // validHit means a ship got hit
                     stop = true;
                     break;
@@ -166,21 +160,21 @@ class Gameboard{
             }
         }
         // Step 3: Log the attacked coordinate
-        this.attackedSquares[JSON.stringify(target)]=validHit;
+        this.attackedSquares[key]=validHit;
 
         // Step 4: Send the damage to the ship
         if(validHit===true){
             let targetedShip = this.shipTypeToShip[attackedShipType];
             if(targetedShip.isSunk()===false){
-                targetedShip.hit()
-                return true;
+                targetedShip.hit();
             }
-            return false;
+            return true;
         }
         else if(validHit===false){
             return false; //If there was no ship hit, return false
         }
     }
+
     allSunk(){
         let numOfSunkShips = 0;
         if(Object.values(this.shipTypeToShip).length>0){
